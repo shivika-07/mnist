@@ -1,5 +1,14 @@
 # mnist
 
+Assignment 4 Result 
+==========================================
+The best accuracy is 0.9481481481481482 at gamma value 0.001
+*********
+At 0.001, train set of length 1257 has accuracy of 0.9992044550517104
+At 0.001, val set of length 270 has accuracy of 0.9925925925925926
+At 0.001, test set of length 270 has accuracy of 0.9481481481481482
+====================================================================
+
 ================================
 Recognizing hand-written digits
 ================================
