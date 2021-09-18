@@ -13,10 +13,10 @@ print(__doc__)
 # License: BSD 3 clause
 
 # Standard scientific Python imports
+from itertools import accumulate
 import matplotlib.pyplot as plt
-
 # Import datasets, classifiers and performance metrics
-from sklearn import datasets, svm, metrics
+from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 
 ###############################################################################
@@ -61,42 +61,81 @@ n_samples = len(digits.images)
 data = digits.images.reshape((n_samples, -1))
 
 # Create a classifier: a support vector classifier
-clf = svm.SVC(gamma=0.001)
+gammaV = [0.0001,0.001,0.01,0.1,1]
 
-# Split data into 50% train and 50% test subsets
-X_train, X_test, y_train, y_test = train_test_split(
-    data, digits.target, test_size=0.5, shuffle=False)
+trainaccuracylst = []
+valaccuracylst = []
+testaccuracylst = []
 
-# Learn the digits on the train subset
-clf.fit(X_train, y_train)
+for gamma in gammaV:
+    clf = svm.SVC(gamma=gamma)
 
-# Predict the value of the digit on the test subset
-predicted = clf.predict(X_test)
+    # Split data into 50% train and 50% test subsets
+    X_train, X_val, y_train, y_val = train_test_split(
+        data, digits.target, test_size=0.3, shuffle=False)
 
-###############################################################################
-# Below we visualize the first 4 test samples and show their predicted
-# digit value in the title.
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_val, y_val, test_size=0.5, shuffle=False)
+    
 
-_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, prediction in zip(axes, X_test, predicted):
-    ax.set_axis_off()
-    image = image.reshape(8, 8)
-    ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-    ax.set_title(f'Prediction: {prediction}')
+    # Learn the digits on the train subset
+    clf.fit(X_train, y_train)
 
-###############################################################################
-# :func:`~sklearn.metrics.classification_report` builds a text report showing
-# the main classification metrics.
+    # Predict the value of the digit on the train subset
+    predicted = clf.predict(X_train)
+    accuracy = metrics.accuracy_score(y_train,predicted)
+    trainaccuracylst.append(accuracy)
 
-print(f"Classification report for classifier {clf}:\n"
-      f"{metrics.classification_report(y_test, predicted)}\n")
+    # Predict the value of the digit on the train subset
+    predicted = clf.predict(X_val)
+    accuracy1 = metrics.accuracy_score(y_val,predicted)
+    valaccuracylst.append(accuracy1)
 
-###############################################################################
-# We can also plot a :ref:`confusion matrix <confusion_matrix>` of the
-# true digit values and the predicted digit values.
+    # Predict the value of the digit on the test subset
+    predicted = clf.predict(X_test)
+    accuracy2 = metrics.accuracy_score(y_test,predicted)
+    testaccuracylst.append(accuracy2)
 
-disp = metrics.plot_confusion_matrix(clf, X_test, y_test)
-disp.figure_.suptitle("Confusion Matrix")
-print(f"Confusion matrix:\n{disp.confusion_matrix}")
+#  sorting of accuracy has been done test data
+sortedaccu = sorted(testaccuracylst)
+acc = max(sortedaccu)
+gammaVal = gammaV[testaccuracylst.index(acc)]
+trainacc = trainaccuracylst[gammaV.index(gammaVal)]
+valacc = valaccuracylst[gammaV.index(gammaVal)]
+testacc = testaccuracylst[gammaV.index(gammaVal)]
 
-plt.show()
+print(f'The best accuracy is {acc} at gamma value {gammaVal}')
+print('*********')
+print(f'At {gammaVal}, train set of length {len(X_train)} has accuracy of {trainacc}')
+print(f'At {gammaVal}, val set of length {len(X_val)} has accuracy of {valacc}')
+print(f'At {gammaVal}, test set of length {len(X_test)} has accuracy of {testacc}')
+print()
+
+
+    ###############################################################################
+    # Below we visualize the first 4 test samples and show their predicted
+    # digit value in the title.
+
+    # _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
+    # for ax, image, prediction in zip(axes, X_test, predicted):
+    #     ax.set_axis_off()
+    #     image = image.reshape(8, 8)
+    #     ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
+    #     ax.set_title(f'Prediction: {prediction}')
+
+    # ###############################################################################
+    # # :func:`~sklearn.metrics.classification_report` builds a text report showing
+    # # the main classification metrics.
+
+    # print(f"Classification report for classifier {clf}:\n"
+    #     f"{metrics.classification_report(y_test, predicted)}\n")
+
+    # ###############################################################################
+    # # We can also plot a :ref:`confusion matrix <confusion_matrix>` of the
+    # # true digit values and the predicted digit values.
+
+    # disp = metrics.plot_confusion_matrix(clf, X_test, y_test)
+    # disp.figure_.suptitle("Confusion Matrix")
+    # print(f"Confusion matrix:\n{disp.confusion_matrix}")
+
+    # plt.show()
