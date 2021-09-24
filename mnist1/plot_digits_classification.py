@@ -18,6 +18,9 @@ import matplotlib.pyplot as plt
 # Import datasets, classifiers and performance metrics
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
+from skimage.transform import rescale
+import numpy as np
+
 
 ###############################################################################
 # Digits dataset
@@ -34,12 +37,6 @@ from sklearn.model_selection import train_test_split
 # them using :func:`matplotlib.pyplot.imread`.
 
 digits = datasets.load_digits()
-
-_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, label in zip(axes, digits.images, digits.target):
-    ax.set_axis_off()
-    ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-    ax.set_title('Training: %i' % label)
 
 ###############################################################################
 # Classification
@@ -58,84 +55,71 @@ for ax, image, label in zip(axes, digits.images, digits.target):
 
 # flatten the images
 n_samples = len(digits.images)
+
+rescale_factors = [1]
 data = digits.images.reshape((n_samples, -1))
 
 # Create a classifier: a support vector classifier
-gammaV = [0.0001,0.001,0.01,0.1,1]
 
-trainaccuracylst = []
-valaccuracylst = []
-testaccuracylst = []
+for rescale_factor in rescale_factors:
+    gammaV = [0.0001,0.001,0.01,0.1,1]
 
-for gamma in gammaV:
-    clf = svm.SVC(gamma=gamma)
+    # trainaccuracylst = []
+    # valaccuracylst = []
+    # testaccuracylst = []
+    model_candidates = []
+    for gamma in gammaV:
+        resized_images = []
+        for d in digits.images:
+            resized_images.append(rescale(d, rescale_factor, anti_aliasing=False))
 
-    # Split data into 50% train and 50% test subsets
-    X_train, X_val, y_train, y_val = train_test_split(
-        data, digits.target, test_size=0.3, shuffle=False)
+        resized_images = np.array(resized_images)
+        data = resized_images.reshape((n_samples, -1))
 
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_val, y_val, test_size=0.5, shuffle=False)
-    
+        clf = svm.SVC(gamma=gamma)
 
-    # Learn the digits on the train subset
-    clf.fit(X_train, y_train)
+        # Split data into 50% train and 50% test subsets
+        X_train, X_val, y_train, y_val = train_test_split(
+            data, digits.target, test_size=0.3, shuffle=False)
 
-    # Predict the value of the digit on the train subset
-    predicted = clf.predict(X_train)
-    accuracy = metrics.accuracy_score(y_train,predicted)
-    trainaccuracylst.append(accuracy)
+        X_val, X_test, y_val, y_test = train_test_split(
+            X_val, y_val, test_size=0.5, shuffle=False)
+        
 
-    # Predict the value of the digit on the train subset
-    predicted = clf.predict(X_val)
-    accuracy1 = metrics.accuracy_score(y_val,predicted)
-    valaccuracylst.append(accuracy1)
+        # Learn the digits on the train subset
+        clf.fit(X_train, y_train)
 
-    # Predict the value of the digit on the test subset
-    predicted = clf.predict(X_test)
-    accuracy2 = metrics.accuracy_score(y_test,predicted)
-    testaccuracylst.append(accuracy2)
+        predicted_valid = clf.predict(X_val)
+        acc_valid = metrics.accuracy_score(y_pred=predicted_valid, y_true=y_val)
+        f1_valid = metrics.f1_score(
+            y_pred=predicted_valid, y_true=y_val, average="macro"
+        )
 
-#  sorting of accuracy has been done test data
-sortedaccu = sorted(testaccuracylst)
-acc = max(sortedaccu)
-gammaVal = gammaV[testaccuracylst.index(acc)]
-trainacc = trainaccuracylst[gammaV.index(gammaVal)]
-valacc = valaccuracylst[gammaV.index(gammaVal)]
-testacc = testaccuracylst[gammaV.index(gammaVal)]
+        if acc_valid < 0.11:
+                print("Skipping for {}".format(gamma))
+                continue
+        
+        candidate = {
+                "acc_valid": acc_valid,
+                "f1_valid": f1_valid,
+                "gamma": gamma,
+            }
+        model_candidates.append(candidate)
+        max_valid_f1_model_candidate = max(
+            model_candidates, key=lambda x: x["f1_valid"]
+        )
 
-print(f'The best accuracy is {acc} at gamma value {gammaVal}')
-print('*********')
-print(f'At {gammaVal}, train set of length {len(X_train)} has accuracy of {trainacc}')
-print(f'At {gammaVal}, val set of length {len(X_val)} has accuracy of {valacc}')
-print(f'At {gammaVal}, test set of length {len(X_test)} has accuracy of {testacc}')
-print()
+        predicted = clf.predict(X_test)
 
+        acc = metrics.accuracy_score(y_pred=predicted, y_true=y_test)
+        f1 = metrics.f1_score(y_pred=predicted, y_true=y_test, average="macro")
+        print(
+            "{}x{}\t{}\t{:.3f}\t{:.3f}".format(
+                resized_images[0].shape[0],
+                resized_images[0].shape[1],
+                max_valid_f1_model_candidate["gamma"],
+                acc,
+                f1,
+            )
+        )
 
-    ###############################################################################
-    # Below we visualize the first 4 test samples and show their predicted
-    # digit value in the title.
-
-    # _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-    # for ax, image, prediction in zip(axes, X_test, predicted):
-    #     ax.set_axis_off()
-    #     image = image.reshape(8, 8)
-    #     ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-    #     ax.set_title(f'Prediction: {prediction}')
-
-    # ###############################################################################
-    # # :func:`~sklearn.metrics.classification_report` builds a text report showing
-    # # the main classification metrics.
-
-    # print(f"Classification report for classifier {clf}:\n"
-    #     f"{metrics.classification_report(y_test, predicted)}\n")
-
-    # ###############################################################################
-    # # We can also plot a :ref:`confusion matrix <confusion_matrix>` of the
-    # # true digit values and the predicted digit values.
-
-    # disp = metrics.plot_confusion_matrix(clf, X_test, y_test)
-    # disp.figure_.suptitle("Confusion Matrix")
-    # print(f"Confusion matrix:\n{disp.confusion_matrix}")
-
-    # plt.show()
