@@ -1,5 +1,14 @@
 # mnist
 
+Assignment 5 Result 
+=============================================
+Skipping for 1e-07
+Skipping for 1e-06
+Skipping for 0.1
+size of image 8x8        gamme value 0.001       accuracy 0.096  f1_score0.018
+
+==================================================
+
 Assignment 4 Result 
 ==========================================
 The best accuracy is 0.9481481481481482 at gamma value 0.001
