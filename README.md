@@ -1,8 +1,11 @@
-# mnist
+# tests
 
 Assignment 6 Result
+======================================
 
 Attached the screenshot of result in the assignment link
+
+======================================
 
 Assignment 4 Result 
 ==========================================
