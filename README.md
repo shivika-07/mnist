@@ -1,5 +1,9 @@
 # mnist
 
+Assignment 6 Result
+
+Attached the screenshot of result in the assignment link
+
 Assignment 4 Result 
 ==========================================
 The best accuracy is 0.9481481481481482 at gamma value 0.001
