@@ -16,9 +16,9 @@ def preprocess(images, rf):
 
 def create_split(data,target, test_size,valid_size):
     X_train, X_val, y_train, y_val = train_test_split(
-            data, target, test_size = test_size + valid_size, shuffle=False)
+            data, target, test_size = test_size + valid_size , shuffle=False)
     X_val, X_test, y_val, y_test = train_test_split(
-        X_val, y_val, test_size= valid_size / (test_size + valid_size), shuffle=False)
+        X_val, y_val, test_size= test_size / (test_size + valid_size), shuffle=False)
 
     return X_train, X_test, X_val, y_train, y_test, y_val
 
