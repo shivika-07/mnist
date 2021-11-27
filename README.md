@@ -1,3 +1,13 @@
+# FINAL exam
+
+For bad hyperparameter,  we are getting bad accuracy too and the reason for the same is overfitting of data in training set.
+
+In case good hyperparameter selection. We are getting best accuracy which says the training has been done on optimized data, due to which performance of model on testing set is also good.
+
+
+![image](https://user-images.githubusercontent.com/73714835/143684575-8c6c90fb-2127-43c7-b83a-b2afee96b10d.png)
+
+
 # mnist
 
 Assignment 4 Result 
