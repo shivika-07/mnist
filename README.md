@@ -8,32 +8,10 @@ Step1- Step4 => available in code
 Step 5 => As we increase the size of training set, accuracy of model is improving but if we do 100% training than chance of overfitting case may occur.
 
 Step 6 => 
-Comparison with 20 and 30 percnt training data
-Confusion matrix of 0.30000000000000004 training data
-Confusion matrix:
-[[18  0  0  0  1  0  0  0  0  0]
- [ 0 17  0  0  0  0  0  0  0  0]
- [ 0  0 18  0  0  0  0  0  0  0]
- [ 0  0  0 18  0  0  0  0  1  0]
- [ 0  0  0  0 16  0  0  0  0  1]
- [ 0  0  0  0  0 18  0  0  0  1]
- [ 0  1  0  0  0  0 18  0  0  0]
- [ 0  0  0  0  0  0  0 16  1  0]
- [ 0  0  0  0  0  0  0  0 12  4]
- [ 0  0  0  0  0  0  0  0  0 19]]
-Confusion matrix of 0.19999999999999996 training data
-Confusion matrix:
-[[18  0  0  0  1  0  0  0  0  0]
- [ 0 15  0  0  0  0  0  0  2  0]
- [ 0  0 17  0  0  0  0  0  0  1]
- [ 0  0  0 18  0  0  0  0  1  0]
- [ 0  0  0  0 16  0  0  0  0  1]
- [ 0  0  0  0  0 17  0  0  0  2]
- [ 0  0  0  0  0  0 19  0  0  0]
- [ 0  0  0  0  0  0  0 16  1  0]
- [ 0  1  0  0  0  0  0  0  8  7]
- [ 0  1  0  0  0  0  0  0  0 18]]
- 
+
+
+![image](https://user-images.githubusercontent.com/73714835/143908464-bd2440f6-047b-4120-8226-a251e908c927.png)
+
  
  ![image](https://user-images.githubusercontent.com/73714835/143907349-54a1126e-388f-4af2-8096-cc832ef80deb.png)
 
